@@ -19,10 +19,15 @@
 		Edit the $pilotConfig and $productionConfig (and $reportType) variables appropriately.
 #>
 
+param(
+    [Parameter(Mandatory)]
+    [String]$Company
+)
+
 Set-StrictMode -Version "2.0"
 
 ######## Edit as appropriate ####################################
-$pilotConfig = "Freeport\Pilot" # the path of the Pilot / Target config export files relative to the MIM Configuration Documenter "Data" folder.
+$pilotConfig = "$Company\Pilot" # the path of the Pilot / Target config export files relative to the MIM Configuration Documenter "Data" folder.
 $productionConfig = "MIM-SP1-Base_4.4.1459.0" # the path of the Production / Baseline config export files relative to the MIM Configuration Documenter "Data" folder.
 $reportType = "SyncAndService" # "SyncOnly" # "ServiceOnly"
 #################################################################

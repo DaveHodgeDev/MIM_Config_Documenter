@@ -7,13 +7,42 @@
 # Please note you will need to rename the file to Pilot_policy.xml or production_policy.xml.
 # See the documentation for more information.
 
+param(
+    [Parameter(Mandatory)]
+    [String]$Company
+)
+
 if(@(get-pssnapin | where-object {$_.Name -eq "FIMAutomation"} ).count -eq 0) {add-pssnapin FIMAutomation}
 
-$policy_filename = "C:\Code\MIM_Config_Documenter\Data\Freeport\Pilot\ServiceConfig\policy.xml"
+#######################################################################
+# Create a new folder (subdirectory)
+#######################################################################
+Function CreateFolder
+{ 
+	Param([string]$Path)
+
+	if ((Test-Path "$Path" -pathType container) -ne $True) 
+	{
+		Write-Host "Creating folder: $Path"
+		mkdir $Path | out-null
+	}
+    else 
+    {
+        Write-Host "Folder already exists: $Path"
+    }
+} 
+
+$SyncFolder = "C:\Code\MIM_Config_Documenter\Data\$Company\Pilot\SyncConfig"
+CreateFolder $SyncFolder
+
+$ServiceFolder = "C:\Code\MIM_Config_Documenter\Data\$Company\Pilot\ServiceConfig"
+CreateFolder $ServiceFolder
+
+$policy_filename = "$ServiceFolder\policy.xml"
 Write-Host "Exporting configuration objects from pilot."
 # In many production environments, some Set resources are larger than the default message size of 10 MB.
 $policy = Export-FIMConfig -policyConfig -portalConfig -MessageSize 9999999
-if ($policy -eq $null)
+if ($null -eq $policy)
 {
     Write-Host "Export did not successfully retrieve configuration from FIM.  Please review any error messages and ensure that the arguments to Export-FIMConfig are correct."
 }

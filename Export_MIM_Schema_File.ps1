@@ -10,7 +10,37 @@
 
 if(@(get-pssnapin | where-object {$_.Name -eq "FIMAutomation"} ).count -eq 0) {add-pssnapin FIMAutomation}
 
-$schema_filename = "C:\Code\MIM_Config_Documenter\Data\Freeport\Pilot\ServiceConfig\schema.xml"
+
+param(
+    [Parameter(Mandatory)]
+    [String]$Company
+)
+
+#######################################################################
+# Create a new folder (subdirectory)
+#######################################################################
+Function CreateFolder
+{ 
+	Param([string]$Path)
+
+	if ((Test-Path "$Path" -pathType container) -ne $True) 
+	{
+		Write-Host "Creating folder: $Path"
+		mkdir $Path | out-null
+	}
+    else 
+    {
+        Write-Host "Folder already exists: $Path"
+    }
+} 
+
+$SyncFolder = "C:\Code\MIM_Config_Documenter\Data\$Company\Pilot\SyncConfig"
+CreateFolder $SyncFolder
+
+$ServiceFolder = "C:\Code\MIM_Config_Documenter\Data\$Company\Pilot\ServiceConfig"
+CreateFolder $ServiceFolder
+
+$schema_filename = "$ServiceFolder\schema.xml"
 Write-Host "Exporting configuration objects from pilot."
 # Please note that SynchronizationFilter Resources inform the FIM MA.
 $schema = Export-FIMConfig -schemaConfig -customConfig "/SynchronizationFilter"
